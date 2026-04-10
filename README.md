@@ -216,3 +216,12 @@ The key points:
 - **All contributions become the property of the original author.**
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+
+# Showcase
+
+<img width="1393" height="919" alt="Screenshot 2026-04-09 231703" src="https://github.com/user-attachments/assets/6c82c77b-e051-42dc-bb78-a1771c1dc490" />
+<img width="1386" height="917" alt="Screenshot 2026-04-09 231648" src="https://github.com/user-attachments/assets/99ff2358-1b9f-4f43-b2e7-f17ffd237085" />
+<img width="1392" height="919" alt="Screenshot 2026-04-09 231657" src="https://github.com/user-attachments/assets/8b99dfc6-d844-4b1a-b5e5-88cd73e60c69" />
+<img width="1394" height="922" alt="Screenshot 2026-04-09 231638" src="https://github.com/user-attachments/assets/ebd970fe-4a2f-44c6-b509-056c49bff000" />
+
