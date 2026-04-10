@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:aedit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             xmlns:rev="clr-namespace:LibreCode.Features.Reversing"
+             x:Class="LibreCode.Views.Reversing.DecompileSubView"
+             Background="#1e1e1e">
+    <Grid ColumnDefinitions="200,4,*">
+        <!-- Type tree -->
+        <Border Grid.Column="0" Background="#252526">
+            <Grid RowDefinitions="Auto,*">
+                <TextBlock Grid.Row="0" Text="Types" FontSize="11" FontWeight="SemiBold"
+                           Foreground="#999" Padding="8,6"/>
+                <TreeView Grid.Row="1" x:Name="TypeTree"
+                          Background="#252526" Foreground="#d4d4d4" FontSize="12"
+                          SelectionChanged="OnTypeSelected">
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate x:DataType="rev:TypeTreeNode" ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding DisplayName}"/>
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </Grid>
+        </Border>
+
+        <GridSplitter Grid.Column="1" Background="#3c3c3c" ResizeDirection="Columns"/>
+
+        <!-- Decompiled C# source -->
+        <aedit:TextEditor Grid.Column="2" x:Name="CodeEditor"
+                          IsReadOnly="True" ShowLineNumbers="True"
+                          FontFamily="Cascadia Mono,Consolas,Menlo,monospace"
+                          FontSize="13" Background="#1e1e1e" Foreground="#d4d4d4"/>
+    </Grid>
+</UserControl>

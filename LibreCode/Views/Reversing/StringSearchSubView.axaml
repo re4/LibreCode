@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:rev="clr-namespace:LibreCode.Features.Reversing"
+             x:Class="LibreCode.Views.Reversing.StringSearchSubView"
+             Background="#1e1e1e">
+    <Grid RowDefinitions="Auto,*">
+        <!-- Search bar -->
+        <Border Grid.Row="0" Padding="8" Background="#252526"
+                BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBox Grid.Column="0" x:Name="FilterBox"
+                         Watermark="Filter strings..." FontSize="12"
+                         Background="#2d2d2d" Foreground="#d4d4d4"/>
+                <Button Grid.Column="1" Content="Search" Padding="8,4"
+                        Margin="4,0,0,0" FontSize="11" Click="OnSearchClick"/>
+            </Grid>
+        </Border>
+
+        <!-- Results -->
+        <DataGrid Grid.Row="1" x:Name="ResultsGrid"
+                  Background="#1e1e1e" Foreground="#d4d4d4"
+                  FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="12"
+                  GridLinesVisibility="Horizontal"
+                  HeadersVisibility="Column"
+                  IsReadOnly="True"
+                  AutoGenerateColumns="False"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Token" Width="100"
+                                    Binding="{Binding TokenHex}"
+                                    x:DataType="rev:StringSearchResult"/>
+                <DataGridTextColumn Header="Offset" Width="80"
+                                    Binding="{Binding OffsetHex}"
+                                    x:DataType="rev:StringSearchResult"/>
+                <DataGridTextColumn Header="Value" Width="*"
+                                    Binding="{Binding Value}"
+                                    x:DataType="rev:StringSearchResult"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

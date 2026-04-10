@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LibreCode.Views.Reversing.AIAnalysisSubView"
+             Background="#1e1e1e">
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Controls -->
+        <Border Grid.Row="0" Padding="8" Background="#252526"
+                BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+            <StackPanel Spacing="6">
+                <TextBlock Text="AI Reverse Engineering Analysis"
+                           FontSize="13" FontWeight="SemiBold" Foreground="#4ec9b0"/>
+                <TextBlock Text="Sends the current decompiled type to the AI for vulnerability analysis, obfuscation detection, and control flow explanation."
+                           FontSize="11" Foreground="#999" TextWrapping="Wrap"/>
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBox Grid.Column="0" x:Name="CustomPrompt"
+                             Watermark="Optional: add specific analysis instructions..."
+                             FontSize="12" Background="#2d2d2d" Foreground="#d4d4d4"/>
+                    <Button Grid.Column="1" x:Name="AnalyzeBtn"
+                            Content="Analyze" Padding="12,4"
+                            Margin="4,0,0,0" FontSize="11" Click="OnAnalyzeClick"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- AI response -->
+        <ScrollViewer Grid.Row="1" x:Name="ResponseScroll" Padding="12">
+            <TextBlock x:Name="ResponseText"
+                       TextWrapping="Wrap" FontSize="12"
+                       Foreground="#d4d4d4"
+                       Text="Click 'Analyze' after loading an assembly and selecting a type in the Decompile tab."/>
+        </ScrollViewer>
+
+        <!-- Status -->
+        <Border Grid.Row="2" Padding="8" Background="#252526"
+                BorderBrush="#3c3c3c" BorderThickness="0,1,0,0">
+            <TextBlock x:Name="StatusLabel" FontSize="11" Foreground="#999"/>
+        </Border>
+    </Grid>
+</UserControl>

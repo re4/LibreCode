@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:LibreCode.ViewModels"
+             xmlns:ai="clr-namespace:LibreCode.Features.AI"
+             x:Class="LibreCode.Views.AiPanelView"
+             x:DataType="vm:MainViewModel"
+             Background="#252526">
+    <Grid RowDefinitions="*,Auto">
+        <!-- Messages -->
+        <ScrollViewer Grid.Row="0" x:Name="MessageScroll" Padding="8">
+            <ItemsControl ItemsSource="{Binding AiMessages}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="ai:AiMessage">
+                        <Border Margin="0,4" Padding="8" CornerRadius="4"
+                                Background="#2d2d2d">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="{Binding Title}" FontSize="11"
+                                           FontWeight="SemiBold" Foreground="#569cd6"/>
+                                <TextBlock Text="{Binding Content}" TextWrapping="Wrap"
+                                           FontSize="12" Foreground="#d4d4d4"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Input area -->
+        <Border Grid.Row="1" Background="#1e1e1e" Padding="8"
+                BorderBrush="#3c3c3c" BorderThickness="0,1,0,0">
+            <Grid RowDefinitions="Auto,Auto">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                    <TextBox x:Name="InputBox" Grid.Column="0"
+                             Watermark="Describe a task for the agent..."
+                             Background="#2d2d2d" Foreground="#d4d4d4"
+                             FontSize="12" AcceptsReturn="False"
+                             KeyDown="OnInputKeyDown"/>
+                    <Button Grid.Column="1" Content="▶" Padding="8,4"
+                            Margin="4,0,0,0" FontSize="14"
+                            Click="OnSendClick"/>
+                </Grid>
+
+                <ComboBox Grid.Row="1" x:Name="ModeSelector"
+                         Margin="0,6,0,0" FontSize="11"
+                         Background="#2d2d2d" Foreground="#d4d4d4"
+                         MinWidth="110" MaxDropDownHeight="160"
+                         SelectedIndex="0"
+                         SelectionChanged="OnModeSelectionChanged">
+                    <ComboBoxItem Content="Ask" Tag="Ask"/>
+                    <ComboBoxItem Content="Agent" Tag="Agent"/>
+                    <ComboBoxItem Content="Plan" Tag="Plan"/>
+                    <ComboBoxItem Content="Debug" Tag="Debug"/>
+                </ComboBox>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

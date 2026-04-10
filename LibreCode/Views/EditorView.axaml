@@ -1,0 +1,64 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:LibreCode.ViewModels"
+             xmlns:aedit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+             x:Class="LibreCode.Views.EditorView"
+             x:DataType="vm:MainViewModel"
+             Background="#1e1e1e">
+    <Grid RowDefinitions="28,*">
+        <!-- Tab bar -->
+        <Border Grid.Row="0" Background="#252526" BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+            <ItemsControl ItemsSource="{Binding OpenTabs}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:EditorTab">
+                        <Border Padding="10,4" Cursor="Hand"
+                                Background="#2d2d2d" BorderBrush="#3c3c3c" BorderThickness="0,0,1,0"
+                                PointerPressed="OnTabPointerPressed">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Foreground="#ccc" FontSize="12"
+                                           Text="{Binding Name}"/>
+                                <TextBlock Text="x" Foreground="#888" FontSize="10" Cursor="Hand"
+                                           VerticalAlignment="Center"
+                                           PointerPressed="OnTabClosePressed"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+
+        <!-- Editor area -->
+        <Panel Grid.Row="1">
+            <!-- Welcome screen when no tabs open -->
+            <StackPanel x:Name="WelcomePanel"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+                <TextBlock Text="LibreCode" FontSize="32" Foreground="#666"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="AI-Powered Code Editor — Powered by Ollama"
+                           FontSize="14" Foreground="#555" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="16" Margin="0,8">
+                    <TextBlock FontSize="12" Foreground="#888">
+                        <Run Text="Ctrl+Shift+P" Foreground="#569cd6"/> Command Palette
+                    </TextBlock>
+                    <TextBlock FontSize="12" Foreground="#888">
+                        <Run Text="Ctrl+`" Foreground="#569cd6"/> Terminal
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Text editor -->
+            <aedit:TextEditor x:Name="Editor"
+                              IsVisible="False"
+                              FontFamily="Cascadia Code, Fira Code, Consolas, monospace"
+                              FontSize="13"
+                              ShowLineNumbers="True"
+                              Background="#1e1e1e"
+                              Foreground="#d4d4d4"/>
+        </Panel>
+    </Grid>
+</UserControl>

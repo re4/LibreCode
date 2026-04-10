@@ -1,0 +1,11 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="LibreCode.Views.Reversing.PEInfoSubView"
+             Background="#1e1e1e">
+    <ScrollViewer Padding="12">
+        <StackPanel x:Name="InfoPanel" Spacing="12">
+            <TextBlock Text="Load an assembly to inspect PE headers."
+                       Foreground="#999" FontSize="12"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

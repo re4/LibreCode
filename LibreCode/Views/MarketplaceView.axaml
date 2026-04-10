@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:LibreCode.ViewModels"
+             xmlns:mp="clr-namespace:LibreCode.Features.Marketplace"
+             x:Class="LibreCode.Views.MarketplaceView"
+             x:DataType="vm:MainViewModel"
+             Background="#252526">
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+        <TextBlock Grid.Row="0" Text="Model Marketplace" FontSize="14"
+                   FontWeight="SemiBold" Foreground="#ccc"
+                   Margin="12,12,12,2"/>
+
+        <!-- GPU badge on its own row -->
+        <Border Grid.Row="1" Background="#2d2d2d" CornerRadius="4"
+                Padding="8,4" Margin="12,2,12,6"
+                BorderBrush="#3c3c3c" BorderThickness="1"
+                HorizontalAlignment="Left">
+            <TextBlock x:Name="GpuBadge" FontSize="11" Foreground="#4ec9b0"/>
+        </Border>
+
+        <TextBox Grid.Row="2" x:Name="SearchBox" Watermark="Search models..."
+                 Margin="12,0,12,4" Background="#2d2d2d" Foreground="#d4d4d4"
+                 FontSize="12" KeyDown="OnSearchKeyDown"/>
+
+        <ScrollViewer Grid.Row="3" Margin="8,4">
+            <ItemsControl x:Name="ModelList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="mp:LibraryModel">
+                        <Border Margin="4" Padding="10" CornerRadius="4"
+                                Background="#2d2d2d" BorderBrush="#3c3c3c" BorderThickness="1">
+                            <StackPanel Spacing="4">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="{Binding Id}" FontSize="13"
+                                               FontWeight="SemiBold" Foreground="#4ec9b0"/>
+                                    <Border Grid.Column="1"
+                                            Background="#1e1e1e" CornerRadius="3"
+                                            Padding="6,2"
+                                            IsVisible="{Binding VramDisplay, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                        <TextBlock Text="{Binding VramDisplay}"
+                                                   FontSize="10" Foreground="#e8ab53"/>
+                                    </Border>
+                                </Grid>
+                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
+                                           FontSize="11" Foreground="#999" MaxLines="2"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{Binding Pulls}" FontSize="10" Foreground="#888"/>
+                                    <TextBlock Text="{Binding TagCount, StringFormat='Tags: {0}'}"
+                                               FontSize="10" Foreground="#888"/>
+                                    <TextBlock Text="{Binding UpdatedAt}" FontSize="10" Foreground="#666"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

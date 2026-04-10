@@ -1,0 +1,23 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:term="clr-namespace:Iciclecreek.Terminal;assembly=Iciclecreek.Avalonia.Terminal"
+             x:Class="LibreCode.Views.TerminalView"
+             Background="#1e1e1e">
+    <Grid RowDefinitions="28,*">
+        <Border Grid.Row="0" Background="#252526" Padding="8,0"
+                BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="TERMINAL" FontSize="11" FontWeight="SemiBold"
+                           Foreground="#bbb" VerticalAlignment="Center"/>
+                <Button Grid.Column="1" Content="X" FontSize="10"
+                        Padding="6,1" VerticalAlignment="Center"
+                        Click="OnCloseClick"/>
+            </Grid>
+        </Border>
+
+        <term:TerminalControl Grid.Row="1" x:Name="Terminal"
+                              FontFamily="Cascadia Code, Fira Code, Consolas, monospace"
+                              FontSize="13"
+                              BufferSize="5000"/>
+    </Grid>
+</UserControl>

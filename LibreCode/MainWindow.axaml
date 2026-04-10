@@ -1,0 +1,96 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:LibreCode.Views"
+        xmlns:vm="clr-namespace:LibreCode.ViewModels"
+        x:Class="LibreCode.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="{Binding WindowTitle}"
+        Width="1400" Height="900"
+        MinWidth="800" MinHeight="500"
+        Background="#1e1e1e"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid RowDefinitions="30,*,Auto,Auto,24">
+        <!-- Title bar -->
+        <Border Grid.Row="0" Background="#2d2d2d" Padding="12,0">
+            <TextBlock Text="{Binding WindowTitle}"
+                       Foreground="#999" FontSize="12"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Border>
+
+        <!-- Main content area -->
+        <Grid Grid.Row="1" ColumnDefinitions="250,4,*,4,350">
+            <views:FileExplorerView Grid.Column="0" DataContext="{Binding}"/>
+
+            <GridSplitter Grid.Column="1" Background="#3c3c3c"
+                          ResizeDirection="Columns"/>
+
+            <views:EditorView Grid.Column="2" DataContext="{Binding}"/>
+
+            <GridSplitter Grid.Column="3" Background="#3c3c3c"
+                          ResizeDirection="Columns"/>
+
+            <!-- Right panel -->
+            <Grid Grid.Column="4" RowDefinitions="32,*">
+                <Border Grid.Row="0" Background="#252526" BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+                    <StackPanel Orientation="Horizontal" Spacing="0">
+                        <Button Content="AI" Classes="panelTab" Click="OnAiTabClick"/>
+                        <Button Content="Models" Classes="panelTab" Click="OnModelsTabClick"/>
+                        <Button Content="Settings" Classes="panelTab" Click="OnSettingsTabClick"/>
+                        <Button Content="Reverse" Classes="panelTab" Click="OnReverseTabClick"/>
+                    </StackPanel>
+                </Border>
+
+                <Panel Grid.Row="1">
+                    <views:AiPanelView x:Name="AiPanel"
+                                       DataContext="{Binding}"/>
+                    <views:MarketplaceView x:Name="MarketplacePanel"
+                                           IsVisible="False"
+                                           DataContext="{Binding}"/>
+                    <views:SettingsView x:Name="SettingsPanel"
+                                       IsVisible="False"
+                                       DataContext="{Binding}"/>
+                    <views:ReversingView x:Name="ReversingPanel"
+                                         IsVisible="False"/>
+                </Panel>
+            </Grid>
+        </Grid>
+
+        <!-- Terminal panel -->
+        <GridSplitter Grid.Row="2" Background="#3c3c3c" Height="4"
+                      ResizeDirection="Rows"
+                      IsVisible="{Binding ShowTerminal}"/>
+        <views:TerminalView Grid.Row="3" Height="250"
+                            IsVisible="{Binding ShowTerminal}"
+                            DataContext="{Binding}"/>
+
+        <!-- Status bar -->
+        <Border Grid.Row="4" Background="#007acc" Padding="8,0">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="12">
+                    <Ellipse Width="8" Height="8">
+                        <Ellipse.Fill>
+                            <SolidColorBrush Color="{Binding OllamaOnline, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <TextBlock x:Name="StatusText" Foreground="White" FontSize="11"
+                               VerticalAlignment="Center" Text="Offline"/>
+                    <TextBlock Text="{Binding CurrentModel}" Foreground="White" FontSize="11"
+                               VerticalAlignment="Center"
+                               IsVisible="{Binding CurrentModel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+                    <TextBlock Foreground="White" FontSize="11" VerticalAlignment="Center">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="Ln {0}, Col {1}">
+                                <Binding Path="CursorLine"/>
+                                <Binding Path="CursorCol"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+
+</Window>

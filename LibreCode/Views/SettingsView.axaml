@@ -1,0 +1,57 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:svc="clr-namespace:LibreCode.Services"
+             x:Class="LibreCode.Views.SettingsView"
+             Background="#252526">
+    <ScrollViewer Padding="12">
+        <StackPanel Spacing="16">
+            <TextBlock Text="Settings" FontSize="16" FontWeight="SemiBold" Foreground="#ccc"/>
+
+            <!-- Rules list -->
+            <StackPanel Spacing="6">
+                <TextBlock Text="AI Rules" FontSize="12" Foreground="#999"/>
+                <ItemsControl x:Name="RulesList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="svc:UserRule">
+                            <Border Margin="0,2" Padding="6" CornerRadius="3"
+                                    Background="#2d2d2d" BorderBrush="#3c3c3c" BorderThickness="1">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <CheckBox Grid.Column="0" IsChecked="{Binding Enabled}"
+                                              Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Content}"
+                                               TextWrapping="Wrap" FontSize="12"
+                                               Foreground="#d4d4d4" VerticalAlignment="Center"/>
+                                    <Button Grid.Column="2" Content="X" FontSize="10"
+                                            Padding="4,1" VerticalAlignment="Center"
+                                            Click="OnRemoveRuleClick"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- New rule input -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBox x:Name="NewRuleBox" Grid.Column="0"
+                             Watermark="Add a new rule..." Background="#2d2d2d"
+                             Foreground="#d4d4d4" FontSize="12"/>
+                    <Button Grid.Column="1" Content="Add" Padding="10,4"
+                            Margin="4,0,0,0" Click="OnAddRuleClick"/>
+                </Grid>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="Ollama Configuration" FontSize="12" Foreground="#999"/>
+                <TextBlock Text="Base URL" FontSize="11" Foreground="#888"/>
+                <TextBox x:Name="OllamaUrlBox" Text="http://127.0.0.1:11434"
+                         Background="#2d2d2d" Foreground="#d4d4d4" FontSize="12"/>
+            </StackPanel>
+
+            <StackPanel Spacing="6">
+                <TextBlock Text="About" FontSize="12" Foreground="#999"/>
+                <TextBlock Text="LibreCode — AI-Powered Code Editor" FontSize="11" Foreground="#888"/>
+                <TextBlock Text="Built with Avalonia UI and Ollama" FontSize="11" Foreground="#666"/>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

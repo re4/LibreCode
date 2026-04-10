@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:LibreCode.ViewModels"
+             xmlns:fs="clr-namespace:LibreCode.Services.FileSystem"
+             x:Class="LibreCode.Views.FileExplorerView"
+             x:DataType="vm:MainViewModel"
+             Background="#252526">
+    <Grid RowDefinitions="32,*">
+        <Border Grid.Row="0" Background="#2d2d2d" Padding="8,0"
+                BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="EXPLORER" FontSize="11" FontWeight="SemiBold"
+                           Foreground="#bbb" VerticalAlignment="Center"/>
+                <Button Grid.Column="1" Content="Open" FontSize="10"
+                        Padding="8,2" VerticalAlignment="Center"
+                        Click="OnOpenFolderClick"/>
+            </Grid>
+        </Border>
+
+        <TreeView Grid.Row="1" x:Name="FileTree"
+                  ItemsSource="{Binding FileTree.Children}"
+                  Background="Transparent"
+                  DoubleTapped="OnTreeDoubleTapped">
+            <TreeView.ItemTemplate>
+                <TreeDataTemplate ItemsSource="{Binding Children}" x:DataType="fs:FileNode">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock FontSize="12" Width="14" Foreground="#999"
+                                   Text="&#128193;" x:Name="IconText"/>
+                        <TextBlock Text="{Binding Name}" FontSize="12" Foreground="#ccc"/>
+                    </StackPanel>
+                </TreeDataTemplate>
+            </TreeView.ItemTemplate>
+
+            <TreeView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Open" Click="OnOpenFileClick"/>
+                    <MenuItem Header="Delete" Click="OnDeleteClick"/>
+                    <Separator/>
+                    <MenuItem Header="New File" Click="OnNewFileClick"/>
+                    <MenuItem Header="New Folder" Click="OnNewFolderClick"/>
+                    <Separator/>
+                    <MenuItem Header="Run in Terminal" Click="OnRunInTerminalClick"/>
+                </ContextMenu>
+            </TreeView.ContextMenu>
+        </TreeView>
+    </Grid>
+</UserControl>
