@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:rev="clr-namespace:LibreCode.Features.Reversing"
+             x:Class="LibreCode.Views.Reversing.WasmImportsExportsSubView"
+             Background="#1e1e1e">
+    <Grid RowDefinitions="*,4,*">
+        <!-- Imports -->
+        <Grid Grid.Row="0" RowDefinitions="Auto,*">
+            <TextBlock Grid.Row="0" Text="Imports" FontSize="13" FontWeight="SemiBold"
+                       Foreground="#4ec9b0" Padding="8,6"/>
+            <DataGrid Grid.Row="1" x:Name="ImportsGrid"
+                      Background="#1e1e1e" Foreground="#d4d4d4"
+                      FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="12"
+                      GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                      IsReadOnly="True" AutoGenerateColumns="False"
+                      CanUserResizeColumns="True" CanUserSortColumns="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="#" Width="50"
+                                        Binding="{Binding Index}"
+                                        x:DataType="rev:WasmImportEntry"/>
+                    <DataGridTextColumn Header="Module" Width="120"
+                                        Binding="{Binding Module}"
+                                        x:DataType="rev:WasmImportEntry"/>
+                    <DataGridTextColumn Header="Field" Width="160"
+                                        Binding="{Binding Field}"
+                                        x:DataType="rev:WasmImportEntry"/>
+                    <DataGridTextColumn Header="Kind" Width="80"
+                                        Binding="{Binding KindName}"
+                                        x:DataType="rev:WasmImportEntry"/>
+                    <DataGridTextColumn Header="Type" Width="*"
+                                        Binding="{Binding TypeDescription}"
+                                        x:DataType="rev:WasmImportEntry"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <GridSplitter Grid.Row="1" Background="#3c3c3c" ResizeDirection="Rows"/>
+
+        <!-- Exports -->
+        <Grid Grid.Row="2" RowDefinitions="Auto,*">
+            <TextBlock Grid.Row="0" Text="Exports" FontSize="13" FontWeight="SemiBold"
+                       Foreground="#4ec9b0" Padding="8,6"/>
+            <DataGrid Grid.Row="1" x:Name="ExportsGrid"
+                      Background="#1e1e1e" Foreground="#d4d4d4"
+                      FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="12"
+                      GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                      IsReadOnly="True" AutoGenerateColumns="False"
+                      CanUserResizeColumns="True" CanUserSortColumns="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="#" Width="50"
+                                        Binding="{Binding Index}"
+                                        x:DataType="rev:WasmExportEntry"/>
+                    <DataGridTextColumn Header="Name" Width="200"
+                                        Binding="{Binding Name}"
+                                        x:DataType="rev:WasmExportEntry"/>
+                    <DataGridTextColumn Header="Kind" Width="80"
+                                        Binding="{Binding KindName}"
+                                        x:DataType="rev:WasmExportEntry"/>
+                    <DataGridTextColumn Header="Index" Width="*"
+                                        Binding="{Binding FunctionIndex}"
+                                        x:DataType="rev:WasmExportEntry"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</UserControl>

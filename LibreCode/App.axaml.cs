@@ -77,6 +77,8 @@ public class App : Application
         services.AddSingleton<SessionPersistenceService>();
         services.AddSingleton<RulesService>();
         services.AddSingleton<AssemblyAnalysisService>();
+        services.AddSingleton<WasmAnalysisService>();
+        services.AddSingleton<CdpDebugService>();
 
         Services = services.BuildServiceProvider();
     }
@@ -109,6 +111,8 @@ public class App : Application
             TryDispose<CodebaseIndexer>();
             TryDispose<AutocompleteService>();
             TryDispose<AssemblyAnalysisService>();
+            TryDispose<WasmAnalysisService>();
+            TryDispose<CdpDebugService>();
             TryDispose<FileSystemService>();
         }
     }

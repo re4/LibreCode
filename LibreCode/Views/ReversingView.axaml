@@ -1,43 +1,103 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:rv="clr-namespace:LibreCode.Views.Reversing"
+             xmlns:views="clr-namespace:LibreCode.Views"
              x:Class="LibreCode.Views.ReversingView"
              Background="#252526">
-    <Grid RowDefinitions="Auto,Auto,*">
-        <!-- Assembly picker -->
-        <Border Grid.Row="0" Padding="8" Background="#1e1e1e"
-                BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
-            <Grid ColumnDefinitions="Auto,*">
-                <Button Grid.Column="0" Content="Open Assembly" Padding="8,4"
-                        FontSize="11" Click="OnOpenAssemblyClick"/>
-                <TextBlock Grid.Column="1" x:Name="LoadedFileLabel"
-                           Text="No assembly loaded"
-                           Foreground="#999" FontSize="11"
-                           VerticalAlignment="Center" Margin="8,0,0,0"
-                           TextTrimming="CharacterEllipsis"/>
-            </Grid>
-        </Border>
-
-        <!-- Sub-tab strip -->
-        <Border Grid.Row="1" Background="#252526" BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+    <Grid RowDefinitions="Auto,*">
+        <!-- Format selector: .NET / WASM -->
+        <Border Grid.Row="0" Background="#1e1e1e" BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal" Spacing="0">
-                <Button Content="Decompile" Classes="panelTab" Click="OnSubTabClick" Tag="decompile"/>
-                <Button Content="IL" Classes="panelTab" Click="OnSubTabClick" Tag="il"/>
-                <Button Content="PE Info" Classes="panelTab" Click="OnSubTabClick" Tag="pe"/>
-                <Button Content="Strings" Classes="panelTab" Click="OnSubTabClick" Tag="strings"/>
-                <Button Content="Hex" Classes="panelTab" Click="OnSubTabClick" Tag="hex"/>
-                <Button Content="AI" Classes="panelTab" Click="OnSubTabClick" Tag="ai"/>
+                <Button x:Name="DotNetTabBtn" Content=".NET" Classes="panelTab"
+                        Click="OnFormatTabClick" Tag="dotnet"
+                        FontWeight="Bold" Foreground="#4ec9b0"/>
+                <Button x:Name="WasmTabBtn" Content="WASM" Classes="panelTab"
+                        Click="OnFormatTabClick" Tag="wasm"/>
             </StackPanel>
         </Border>
 
-        <!-- Sub-view content area -->
-        <Panel Grid.Row="2">
-            <rv:DecompileSubView x:Name="DecompilePanel"/>
-            <rv:ILSubView x:Name="ILPanel" IsVisible="False"/>
-            <rv:PEInfoSubView x:Name="PEPanel" IsVisible="False"/>
-            <rv:StringSearchSubView x:Name="StringsPanel" IsVisible="False"/>
-            <rv:HexSubView x:Name="HexPanel" IsVisible="False"/>
-            <rv:AIAnalysisSubView x:Name="AIPanel" IsVisible="False"/>
-        </Panel>
+        <!-- .NET reversing content -->
+        <Grid Grid.Row="1" x:Name="DotNetPanel" RowDefinitions="Auto,Auto,*">
+            <!-- Assembly picker -->
+            <Border Grid.Row="0" Padding="8" Background="#1e1e1e"
+                    BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Button Grid.Column="0" Content="Open Assembly" Padding="8,4"
+                            FontSize="11" Click="OnOpenAssemblyClick"/>
+                    <TextBlock Grid.Column="1" x:Name="LoadedFileLabel"
+                               Text="No assembly loaded"
+                               Foreground="#999" FontSize="11"
+                               VerticalAlignment="Center" Margin="8,0,0,0"
+                               TextTrimming="CharacterEllipsis"/>
+                </Grid>
+            </Border>
+
+            <!-- .NET sub-tab strip -->
+            <Border Grid.Row="1" Background="#252526" BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+                <StackPanel Orientation="Horizontal" Spacing="0">
+                    <Button Content="Decompile" Classes="panelTab" Click="OnSubTabClick" Tag="decompile"/>
+                    <Button Content="IL" Classes="panelTab" Click="OnSubTabClick" Tag="il"/>
+                    <Button Content="PE Info" Classes="panelTab" Click="OnSubTabClick" Tag="pe"/>
+                    <Button Content="Strings" Classes="panelTab" Click="OnSubTabClick" Tag="strings"/>
+                    <Button Content="Hex" Classes="panelTab" Click="OnSubTabClick" Tag="hex"/>
+                    <Button Content="Debug" Classes="panelTab" Click="OnSubTabClick" Tag="debug"/>
+                    <Button Content="AI" Classes="panelTab" Click="OnSubTabClick" Tag="ai"/>
+                </StackPanel>
+            </Border>
+
+            <!-- .NET sub-view content area -->
+            <Panel Grid.Row="2">
+                <rv:DecompileSubView x:Name="DecompilePanel"/>
+                <rv:ILSubView x:Name="ILPanel" IsVisible="False"/>
+                <rv:PEInfoSubView x:Name="PEPanel" IsVisible="False"/>
+                <rv:StringSearchSubView x:Name="StringsPanel" IsVisible="False"/>
+                <rv:HexSubView x:Name="HexPanel" IsVisible="False"/>
+                <rv:ILDebugSubView x:Name="DebugPanel" IsVisible="False"/>
+                <rv:AIAnalysisSubView x:Name="AIPanel" IsVisible="False"/>
+            </Panel>
+        </Grid>
+
+        <!-- WASM reversing content -->
+        <Grid Grid.Row="1" x:Name="WasmPanel" IsVisible="False" RowDefinitions="Auto,Auto,*">
+            <!-- WASM file picker -->
+            <Border Grid.Row="0" Padding="8" Background="#1e1e1e"
+                    BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+                <Grid ColumnDefinitions="Auto,*">
+                    <Button Grid.Column="0" Content="Open WASM" Padding="8,4"
+                            FontSize="11" Click="OnOpenWasmClick"/>
+                    <TextBlock Grid.Column="1" x:Name="WasmLoadedFileLabel"
+                               Text="No WASM binary loaded"
+                               Foreground="#999" FontSize="11"
+                               VerticalAlignment="Center" Margin="8,0,0,0"
+                               TextTrimming="CharacterEllipsis"/>
+                </Grid>
+            </Border>
+
+            <!-- WASM sub-tab strip -->
+            <Border Grid.Row="1" Background="#252526" BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+                <StackPanel Orientation="Horizontal" Spacing="0">
+                    <Button Content="Disassembly" Classes="panelTab" Click="OnWasmSubTabClick" Tag="disasm"/>
+                    <Button Content="Info" Classes="panelTab" Click="OnWasmSubTabClick" Tag="info"/>
+                    <Button Content="Imports/Exports" Classes="panelTab" Click="OnWasmSubTabClick" Tag="impexp"/>
+                    <Button Content="Strings" Classes="panelTab" Click="OnWasmSubTabClick" Tag="strings"/>
+                    <Button Content="Hex" Classes="panelTab" Click="OnWasmSubTabClick" Tag="hex"/>
+                    <Button Content="Debug" Classes="panelTab" Click="OnWasmSubTabClick" Tag="debug"/>
+                    <Button Content="CDP" Classes="panelTab" Click="OnWasmSubTabClick" Tag="cdp"/>
+                    <Button Content="AI" Classes="panelTab" Click="OnWasmSubTabClick" Tag="ai"/>
+                </StackPanel>
+            </Border>
+
+            <!-- WASM sub-view content area -->
+            <Panel Grid.Row="2">
+                <rv:WasmDisassemblySubView x:Name="WasmDisasmPanel"/>
+                <rv:WasmInfoSubView x:Name="WasmInfoPanel" IsVisible="False"/>
+                <rv:WasmImportsExportsSubView x:Name="WasmImpExpPanel" IsVisible="False"/>
+                <rv:WasmStringSearchSubView x:Name="WasmStringsPanel" IsVisible="False"/>
+                <rv:WasmHexSubView x:Name="WasmHexPanel" IsVisible="False"/>
+                <rv:WasmDebugSubView x:Name="WasmDebugPanel" IsVisible="False"/>
+                <rv:WasmCdpDebugSubView x:Name="WasmCdpPanel" IsVisible="False"/>
+                <rv:WasmAIAnalysisSubView x:Name="WasmAIPanel" IsVisible="False"/>
+            </Panel>
+        </Grid>
     </Grid>
 </UserControl>

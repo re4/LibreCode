@@ -1,0 +1,42 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:rev="clr-namespace:LibreCode.Features.Reversing"
+             x:Class="LibreCode.Views.Reversing.WasmStringSearchSubView"
+             Background="#1e1e1e">
+    <Grid RowDefinitions="Auto,*">
+        <!-- Search bar -->
+        <Border Grid.Row="0" Padding="8" Background="#252526"
+                BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <TextBox Grid.Column="0" x:Name="FilterBox"
+                         Watermark="Filter strings in data segments..." FontSize="12"
+                         Background="#2d2d2d" Foreground="#d4d4d4"/>
+                <TextBox Grid.Column="1" x:Name="MinLenBox" Width="60"
+                         Text="4" Watermark="Min" FontSize="12" Margin="4,0,0,0"
+                         Background="#2d2d2d" Foreground="#d4d4d4"/>
+                <Button Grid.Column="2" Content="Search" Padding="8,4"
+                        Margin="4,0,0,0" FontSize="11" Click="OnSearchClick"/>
+            </Grid>
+        </Border>
+
+        <!-- Results -->
+        <DataGrid Grid.Row="1" x:Name="ResultsGrid"
+                  Background="#1e1e1e" Foreground="#d4d4d4"
+                  FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="12"
+                  GridLinesVisibility="Horizontal" HeadersVisibility="Column"
+                  IsReadOnly="True" AutoGenerateColumns="False"
+                  CanUserResizeColumns="True" CanUserSortColumns="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Offset" Width="100"
+                                    Binding="{Binding OffsetHex}"
+                                    x:DataType="rev:WasmStringResult"/>
+                <DataGridTextColumn Header="Segment" Width="70"
+                                    Binding="{Binding DataSegmentIndex}"
+                                    x:DataType="rev:WasmStringResult"/>
+                <DataGridTextColumn Header="Value" Width="*"
+                                    Binding="{Binding Value}"
+                                    x:DataType="rev:WasmStringResult"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

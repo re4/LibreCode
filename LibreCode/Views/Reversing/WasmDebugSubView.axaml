@@ -1,0 +1,157 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:rev="clr-namespace:LibreCode.Features.Reversing"
+             x:Class="LibreCode.Views.Reversing.WasmDebugSubView"
+             Background="#1e1e1e">
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Toolbar -->
+        <Border Grid.Row="0" Padding="8" Background="#252526"
+                BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+            <Grid RowDefinitions="Auto,Auto">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="Debug Function:" FontSize="11" Foreground="#999"
+                               VerticalAlignment="Center" Margin="0,0,4,0"/>
+                    <ComboBox x:Name="FuncSelector" Width="300" FontSize="12"
+                              Background="#2d2d2d" Foreground="#d4d4d4"/>
+                    <Button x:Name="StartBtn" Content="Start" Padding="8,4"
+                            FontSize="11" Click="OnStartClick"/>
+                    <Button x:Name="StepBtn" Content="Step" Padding="8,4"
+                            FontSize="11" Click="OnStepClick" IsEnabled="False"/>
+                    <Button x:Name="RunBtn" Content="Run" Padding="8,4"
+                            FontSize="11" Click="OnRunClick" IsEnabled="False"/>
+                    <Button x:Name="ResetBtn" Content="Reset" Padding="8,4"
+                            FontSize="11" Click="OnResetClick" IsEnabled="False"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,4,0,0">
+                    <TextBlock Text="Breakpoint at instruction:" FontSize="11" Foreground="#999"
+                               VerticalAlignment="Center"/>
+                    <TextBox x:Name="BpInstrBox" Width="60" FontSize="12"
+                             Background="#2d2d2d" Foreground="#d4d4d4" Watermark="#"/>
+                    <Button Content="Add BP" Padding="8,4" FontSize="11" Click="OnAddBreakpointClick"/>
+                    <Button Content="Clear All BP" Padding="8,4" FontSize="11" Click="OnClearBreakpointsClick"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Main debug area -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,4,300">
+            <!-- Instructions list with current IP highlight -->
+            <Grid Grid.Column="0" RowDefinitions="Auto,*">
+                <TextBlock Grid.Row="0" Text="Instructions" FontSize="11" FontWeight="SemiBold"
+                           Foreground="#999" Padding="8,6"/>
+                <DataGrid Grid.Row="1" x:Name="InstructionsGrid"
+                          Background="#1e1e1e" Foreground="#d4d4d4"
+                          FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="12"
+                          GridLinesVisibility="None" HeadersVisibility="Column"
+                          IsReadOnly="True" AutoGenerateColumns="False"
+                          CanUserResizeColumns="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="" Width="24"
+                                            Binding="{Binding Marker}"
+                                            x:DataType="rev:DebugInstructionRow"/>
+                        <DataGridTextColumn Header="Offset" Width="80"
+                                            Binding="{Binding OffsetHex}"
+                                            x:DataType="rev:DebugInstructionRow"/>
+                        <DataGridTextColumn Header="Instruction" Width="*"
+                                            Binding="{Binding Display}"
+                                            x:DataType="rev:DebugInstructionRow"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Background="#3c3c3c" ResizeDirection="Columns"/>
+
+            <!-- Panels: Stack, Locals, Breakpoints, Output -->
+            <Grid Grid.Column="2" RowDefinitions="*,*,Auto,*">
+                <!-- Stack -->
+                <Grid Grid.Row="0" RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0" Text="Operand Stack" FontSize="11" FontWeight="SemiBold"
+                               Foreground="#4ec9b0" Padding="8,4"/>
+                    <DataGrid Grid.Row="1" x:Name="StackGrid"
+                              Background="#252526" Foreground="#d4d4d4"
+                              FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="11"
+                              GridLinesVisibility="None" HeadersVisibility="Column"
+                              IsReadOnly="True" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="#" Width="30"
+                                                Binding="{Binding Index}"
+                                                x:DataType="rev:WasmStackValue"/>
+                            <DataGridTextColumn Header="Type" Width="50"
+                                                Binding="{Binding Type}"
+                                                x:DataType="rev:WasmStackValue"/>
+                            <DataGridTextColumn Header="Value" Width="*"
+                                                Binding="{Binding Value}"
+                                                x:DataType="rev:WasmStackValue"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+
+                <!-- Locals -->
+                <Grid Grid.Row="1" RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0" Text="Local Variables" FontSize="11" FontWeight="SemiBold"
+                               Foreground="#4ec9b0" Padding="8,4"/>
+                    <DataGrid Grid.Row="1" x:Name="LocalsGrid"
+                              Background="#252526" Foreground="#d4d4d4"
+                              FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="11"
+                              GridLinesVisibility="None" HeadersVisibility="Column"
+                              IsReadOnly="True" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="#" Width="30"
+                                                Binding="{Binding Index}"
+                                                x:DataType="rev:WasmLocalVariable"/>
+                            <DataGridTextColumn Header="Name" Width="80"
+                                                Binding="{Binding Name}"
+                                                x:DataType="rev:WasmLocalVariable"/>
+                            <DataGridTextColumn Header="Type" Width="50"
+                                                Binding="{Binding Type}"
+                                                x:DataType="rev:WasmLocalVariable"/>
+                            <DataGridTextColumn Header="Value" Width="*"
+                                                Binding="{Binding Value}"
+                                                x:DataType="rev:WasmLocalVariable"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+
+                <!-- Breakpoints -->
+                <Border Grid.Row="2" Padding="4" Background="#252526"
+                        BorderBrush="#3c3c3c" BorderThickness="0,1,0,0">
+                    <Grid RowDefinitions="Auto,Auto">
+                        <TextBlock Grid.Row="0" Text="Breakpoints" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="#4ec9b0" Padding="4,2"/>
+                        <ItemsControl Grid.Row="1" x:Name="BreakpointsList"
+                                      FontSize="11" Foreground="#d4d4d4"
+                                      FontFamily="Cascadia Mono,Consolas,Menlo,monospace">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="rev:WasmBreakpoint">
+                                    <StackPanel Orientation="Horizontal" Spacing="4" Margin="4,1">
+                                        <TextBlock Text="{Binding Label}" Foreground="#ce9178"/>
+                                        <TextBlock Text="{Binding Enabled, StringFormat='({0})'}" Foreground="#999"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+
+                <!-- Output log -->
+                <Grid Grid.Row="3" RowDefinitions="Auto,*">
+                    <TextBlock Grid.Row="0" Text="Output" FontSize="11" FontWeight="SemiBold"
+                               Foreground="#4ec9b0" Padding="8,4"/>
+                    <ScrollViewer Grid.Row="1" x:Name="OutputScroll">
+                        <TextBlock x:Name="OutputText"
+                                   FontFamily="Cascadia Mono,Consolas,Menlo,monospace"
+                                   FontSize="11" Foreground="#d4d4d4"
+                                   TextWrapping="Wrap" Padding="8,4"/>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <!-- Status bar -->
+        <Border Grid.Row="2" Padding="8" Background="#252526"
+                BorderBrush="#3c3c3c" BorderThickness="0,1,0,0">
+            <TextBlock x:Name="StatusLabel" FontSize="11" Foreground="#999"
+                       Text="Select a function and click Start to begin debugging."/>
+        </Border>
+    </Grid>
+</UserControl>

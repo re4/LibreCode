@@ -1,0 +1,181 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:rev="clr-namespace:LibreCode.Features.Reversing"
+             x:Class="LibreCode.Views.Reversing.WasmCdpDebugSubView"
+             Background="#1e1e1e">
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <!-- Connection bar -->
+        <Border Grid.Row="0" Padding="8" Background="#252526"
+                BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+            <Grid RowDefinitions="Auto,Auto">
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="CDP Host:" FontSize="11" Foreground="#999"
+                               VerticalAlignment="Center"/>
+                    <TextBox x:Name="HostBox" Width="120" FontSize="12"
+                             Background="#2d2d2d" Foreground="#d4d4d4"
+                             Text="127.0.0.1"/>
+                    <TextBlock Text="Port:" FontSize="11" Foreground="#999"
+                               VerticalAlignment="Center"/>
+                    <TextBox x:Name="PortBox" Width="60" FontSize="12"
+                             Background="#2d2d2d" Foreground="#d4d4d4"
+                             Text="9222"/>
+                    <Button x:Name="DiscoverBtn" Content="Discover" Padding="8,4"
+                            FontSize="11" Click="OnDiscoverClick"/>
+                    <ComboBox x:Name="TargetSelector" Width="250" FontSize="12"
+                              Background="#2d2d2d" Foreground="#d4d4d4"/>
+                    <Button x:Name="ConnectBtn" Content="Connect" Padding="8,4"
+                            FontSize="11" Click="OnConnectClick"/>
+                    <Button x:Name="DisconnectBtn" Content="Disconnect" Padding="8,4"
+                            FontSize="11" Click="OnDisconnectClick" IsEnabled="False"/>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,4,0,0">
+                    <Button x:Name="PauseBtn" Content="Pause" Padding="8,4"
+                            FontSize="11" Click="OnPauseClick" IsEnabled="False"/>
+                    <Button x:Name="ResumeBtn" Content="Resume" Padding="8,4"
+                            FontSize="11" Click="OnResumeClick" IsEnabled="False"/>
+                    <Button x:Name="StepOverBtn" Content="Step Over" Padding="8,4"
+                            FontSize="11" Click="OnStepOverClick" IsEnabled="False"/>
+                    <Button x:Name="StepIntoBtn" Content="Step Into" Padding="8,4"
+                            FontSize="11" Click="OnStepIntoClick" IsEnabled="False"/>
+                    <Button x:Name="StepOutBtn" Content="Step Out" Padding="8,4"
+                            FontSize="11" Click="OnStepOutClick" IsEnabled="False"/>
+                    <Border Width="1" Background="#3c3c3c" Margin="4,0"/>
+                    <TextBlock Text="Evaluate:" FontSize="11" Foreground="#999"
+                               VerticalAlignment="Center"/>
+                    <TextBox x:Name="EvalBox" Width="200" FontSize="12"
+                             Background="#2d2d2d" Foreground="#d4d4d4"
+                             Watermark="expression..."/>
+                    <Button Content="Eval" Padding="8,4" FontSize="11" Click="OnEvalClick"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Breakpoint bar -->
+        <Border Grid.Row="1" Padding="8,4" Background="#252526"
+                BorderBrush="#3c3c3c" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Text="WASM Script:" FontSize="11" Foreground="#999"
+                           VerticalAlignment="Center"/>
+                <ComboBox x:Name="ScriptSelector" Width="200" FontSize="12"
+                          Background="#2d2d2d" Foreground="#d4d4d4"/>
+                <TextBlock Text="Line:" FontSize="11" Foreground="#999"
+                           VerticalAlignment="Center"/>
+                <TextBox x:Name="BpLineBox" Width="60" FontSize="12"
+                         Background="#2d2d2d" Foreground="#d4d4d4" Watermark="0"/>
+                <TextBlock Text="Col:" FontSize="11" Foreground="#999"
+                           VerticalAlignment="Center"/>
+                <TextBox x:Name="BpColBox" Width="50" FontSize="12"
+                         Background="#2d2d2d" Foreground="#d4d4d4" Watermark="0"/>
+                <Button Content="Set BP" Padding="8,4" FontSize="11" Click="OnSetBreakpointClick"/>
+                <Button Content="Clear All BP" Padding="8,4" FontSize="11" Click="OnClearBreakpointsClick"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main debug area -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,4,320">
+            <!-- Left: Call Stack + Source/Disasm -->
+            <Grid Grid.Column="0" RowDefinitions="Auto,*,Auto,*">
+                <TextBlock Grid.Row="0" Text="Call Stack" FontSize="11" FontWeight="SemiBold"
+                           Foreground="#4ec9b0" Padding="8,4"/>
+                <DataGrid Grid.Row="1" x:Name="CallStackGrid"
+                          Background="#1e1e1e" Foreground="#d4d4d4"
+                          FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="11"
+                          GridLinesVisibility="None" HeadersVisibility="Column"
+                          IsReadOnly="True" AutoGenerateColumns="False"
+                          SelectionChanged="OnCallFrameSelected"
+                          MaxHeight="180">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="#" Width="30"
+                                            Binding="{Binding Index}"
+                                            x:DataType="rev:CdpCallFrame"/>
+                        <DataGridTextColumn Header="Function" Width="180"
+                                            Binding="{Binding FunctionName}"
+                                            x:DataType="rev:CdpCallFrame"/>
+                        <DataGridTextColumn Header="Location" Width="*"
+                                            Binding="{Binding Display}"
+                                            x:DataType="rev:CdpCallFrame"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <TextBlock Grid.Row="2" Text="Console" FontSize="11" FontWeight="SemiBold"
+                           Foreground="#4ec9b0" Padding="8,4"/>
+                <ScrollViewer Grid.Row="3" x:Name="ConsoleScroll">
+                    <TextBlock x:Name="ConsoleText"
+                               FontFamily="Cascadia Mono,Consolas,Menlo,monospace"
+                               FontSize="11" Foreground="#d4d4d4"
+                               TextWrapping="Wrap" Padding="8,4"/>
+                </ScrollViewer>
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Background="#3c3c3c" ResizeDirection="Columns"/>
+
+            <!-- Right: Scope Variables + Breakpoints + Scripts -->
+            <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto,Auto,Auto,Auto">
+                <TextBlock Grid.Row="0" Text="Scope Variables" FontSize="11" FontWeight="SemiBold"
+                           Foreground="#4ec9b0" Padding="8,4"/>
+                <DataGrid Grid.Row="1" x:Name="ScopeGrid"
+                          Background="#252526" Foreground="#d4d4d4"
+                          FontFamily="Cascadia Mono,Consolas,Menlo,monospace" FontSize="11"
+                          GridLinesVisibility="None" HeadersVisibility="Column"
+                          IsReadOnly="True" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Width="100"
+                                            Binding="{Binding Name}"
+                                            x:DataType="rev:CdpProperty"/>
+                        <DataGridTextColumn Header="Type" Width="60"
+                                            Binding="{Binding Type}"
+                                            x:DataType="rev:CdpProperty"/>
+                        <DataGridTextColumn Header="Value" Width="*"
+                                            Binding="{Binding Value}"
+                                            x:DataType="rev:CdpProperty"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <TextBlock Grid.Row="2" Text="Breakpoints" FontSize="11" FontWeight="SemiBold"
+                           Foreground="#4ec9b0" Padding="8,4"/>
+                <ItemsControl Grid.Row="3" x:Name="BreakpointsList"
+                              FontSize="11" Foreground="#d4d4d4"
+                              FontFamily="Cascadia Mono,Consolas,Menlo,monospace"
+                              MaxHeight="80">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="rev:CdpBreakpoint">
+                            <StackPanel Orientation="Horizontal" Spacing="4" Margin="8,1">
+                                <TextBlock Text="{Binding Label}" Foreground="#ce9178"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Grid.Row="4" Text="WASM Scripts" FontSize="11" FontWeight="SemiBold"
+                           Foreground="#4ec9b0" Padding="8,4"/>
+                <ItemsControl Grid.Row="5" x:Name="ScriptsList"
+                              FontSize="11" Foreground="#d4d4d4"
+                              FontFamily="Cascadia Mono,Consolas,Menlo,monospace"
+                              MaxHeight="80">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="rev:CdpScript">
+                            <StackPanel Orientation="Horizontal" Spacing="4" Margin="8,1">
+                                <TextBlock Text="{Binding Display}" Foreground="#569cd6"/>
+                                <TextBlock Text="{Binding Url}" Foreground="#666" FontSize="10"
+                                           TextTrimming="CharacterEllipsis" MaxWidth="200"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </Grid>
+
+        <!-- Status bar -->
+        <Border Grid.Row="3" Padding="8" Background="#252526"
+                BorderBrush="#3c3c3c" BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="Auto,*">
+                <Border Grid.Column="0" x:Name="StateDot" Width="8" Height="8"
+                        CornerRadius="4" Background="#666" Margin="0,0,8,0"
+                        VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" x:Name="StatusLabel" FontSize="11" Foreground="#999"
+                           Text="Disconnected. Launch browser with --remote-debugging-port=9222 then click Discover."
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
