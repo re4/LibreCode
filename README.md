@@ -2,7 +2,7 @@
 
 A free, open-source AI-powered code editor built from the ground up with .NET 10 and Avalonia UI. Runs natively on Windows, Linux, and macOS -- no Electron, no web views, just fast native rendering.
 
-LibreCode pairs a full-featured code editor with a local AI assistant powered by [Ollama](https://ollama.com), a built-in terminal, a model marketplace, and a .NET reverse engineering toolkit inspired by dnSpy/ILSpy.
+LibreCode pairs a full-featured code editor with a local AI assistant powered by [Ollama](https://ollama.com), a built-in terminal, a model marketplace, and a serious reverse engineering toolkit for both .NET assemblies and WebAssembly binaries -- including live browser debugging over Chrome DevTools Protocol.
 
 ---
 
@@ -12,7 +12,7 @@ Most AI-powered editors are either closed-source, browser-based, or tied to clou
 
 - **100% local AI** -- your code never leaves your machine. Runs against any Ollama model you have installed.
 - **Truly cross-platform** -- native Avalonia UI, not a web wrapper. Starts fast, stays fast.
-- **Built for hackers** -- ships with a full .NET reversing toolkit (decompiler, IL viewer, hex editor, PE inspector) alongside a modern code editor.
+- **Built for hackers** -- ships with .NET and WASM reversing toolkits (decompiler, IL/WAT disassembly, hex editor, PE inspector, step-through debuggers, live CDP debugging) alongside a modern code editor.
 - **No telemetry, no accounts, no subscriptions.**
 
 ---
@@ -62,16 +62,34 @@ Custom rules let you set persistent instructions that the AI always follows (e.g
 - See model descriptions, parameter counts, variant tags, and estimated VRAM requirements
 - GPU detection shows your available VRAM so you know what will fit
 
-### .NET Reverse Engineering Toolkit
+### Reverse Engineering Toolkit
 
-A full reversing workbench built right into the editor, powered by the same decompilation engine as ILSpy/dnSpy:
+The Reverse tab is split into two formats -- **.NET** and **WASM** -- each with their own file picker and sub-tabs. You flip between them with a single click.
 
-- **C# Decompiler** -- load any .dll or .exe and see the full decompiled C# source. Navigate a type tree (namespaces and classes) and click to decompile individual types.
-- **IL Disassembler** -- view raw IL bytecode for the entire module or any specific type.
-- **PE Inspector** -- examine PE headers (machine type, subsystem, image base, DLL characteristics, entry point), PE sections (.text, .rsrc, etc.), CLR metadata (runtime version, target framework), and all assembly references with versions and public key tokens.
-- **String Search** -- scan the user strings heap for hardcoded strings, URLs, keys, and credentials. Filter results in real time.
-- **Hex Viewer** -- page through raw file bytes with offset, hex, and ASCII columns. Jump to any offset instantly.
-- **AI Analysis** -- send decompiled code to the AI with a reverse-engineering-focused prompt that analyzes for vulnerabilities, obfuscation patterns, anti-debugging techniques, and control flow.
+#### .NET Reversing
+
+Powered by the same decompilation engine as ILSpy/dnSpy:
+
+- **C# Decompiler** -- load any .dll or .exe and browse the full decompiled source. Navigate by namespace and class, click to decompile individual types.
+- **IL Disassembler** -- raw IL bytecode for the entire module or per-type.
+- **PE Inspector** -- PE headers, sections, CLR metadata, assembly references, the works.
+- **String Search** -- scan the user strings heap for hardcoded strings, URLs, keys, credentials. Real-time filtering.
+- **Hex Viewer** -- page through raw bytes with offset, hex, and ASCII columns. Jump to any offset.
+- **IL Debugger** -- step through .NET IL instructions one at a time. Pick a method, set breakpoints, and watch the evaluation stack and local variables change as you step. It simulates the CLR execution engine so you can understand exactly what a method does at the bytecode level without actually running it.
+- **AI Analysis** -- send decompiled code to the AI for vulnerability analysis, obfuscation detection, anti-debugging pattern recognition, and control flow review.
+
+#### WASM Reversing
+
+A zero-dependency WebAssembly binary analysis toolkit built from scratch:
+
+- **WAT Disassembly** -- full disassembly of every function in WebAssembly Text format. Browse functions in a tree, click to see the instruction listing.
+- **Module Info** -- high-level overview of the binary: version, function/import/export/global/table/memory/data segment counts, section layout.
+- **Imports & Exports** -- split-pane view of everything the module imports and exports, with kind and type info.
+- **String Search** -- extract strings from WASM data segments with offset and segment index.
+- **Hex Viewer** -- same hex/ASCII pager as the .NET side, but for .wasm files.
+- **WASM Debugger** -- step-through interpreter for WASM bytecode. Select a function, set breakpoints on instruction indices, and single-step through execution. Watch the operand stack grow and shrink, inspect local variables, and see output in real time. Covers ~200 opcodes.
+- **CDP Live Debugger** -- connect to a real browser instance over Chrome DevTools Protocol and debug WASM running in the wild. Discover targets, attach to a tab, pause/resume/step over/step into/step out, set breakpoints on WASM scripts by line and column, evaluate expressions in the paused frame context, inspect scope variables and the call stack, read WASM linear memory, and watch console output -- all from inside LibreCode. Just launch Chrome or Edge with `--remote-debugging-port=9222` and hit Discover.
+- **AI Analysis** -- send disassembled WASM functions to the AI for the same deep analysis you get on the .NET side.
 
 ### Session Persistence
 
@@ -147,8 +165,10 @@ Edit `appsettings.json` to customize:
 | Code Editor | AvaloniaEdit + TextMate grammars |
 | Terminal | Iciclecreek.Avalonia.Terminal (XTerm.NET + Porta.Pty) |
 | AI Backend | Ollama (local LLM inference) |
-| Decompiler | ICSharpCode.Decompiler (ILSpy engine) |
+| .NET Decompiler | ICSharpCode.Decompiler (ILSpy engine) |
 | PE Analysis | System.Reflection.Metadata |
+| WASM Analysis | Custom zero-dependency binary parser + interpreter |
+| CDP Debugging | Chrome DevTools Protocol over WebSocket (System.Net.WebSockets) |
 | Architecture | MVVM with CommunityToolkit.Mvvm |
 | DI | Microsoft.Extensions.DependencyInjection |
 | Target | .NET 10, Windows / Linux / macOS |
@@ -168,7 +188,7 @@ LibreCode/
     Context/         # Codebase indexer + embedding store
     InlineEdit/      # Inline code editing via AI
     Marketplace/     # Ollama model browser, GPU detection
-    Reversing/       # Assembly analysis service + data models
+    Reversing/       # .NET + WASM analysis services, IL/WASM debuggers, CDP client
   Services/
     FileSystem/      # Project-scoped file I/O with watcher
     Ollama/          # Ollama HTTP client + request/response models
@@ -183,8 +203,9 @@ LibreCode/
     MarketplaceView  # Model browser
     SettingsView     # Rules and config
     TerminalView     # Integrated terminal
-    ReversingView    # Reverse engineering panel
-    Reversing/       # Decompile, IL, PE, Strings, Hex, AI sub-views
+    ReversingView    # Reverse engineering panel (.NET / WASM format switcher)
+    Reversing/       # .NET sub-views (Decompile, IL, PE, Strings, Hex, IL Debug, AI)
+                     # WASM sub-views (Disassembly, Info, Imports/Exports, Strings, Hex, Debug, CDP, AI)
 ```
 
 ---
